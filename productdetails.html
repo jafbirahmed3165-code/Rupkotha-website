@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - RUPKOTHA.COM</title>
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --background-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --accent-color: #ff4757;
+            --success-color: #2ed573;
+            --warning-color: #f1c40f;
+            --font-family: 'Poppins', sans-serif;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 10px;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 1rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link i { margin-right: 0.5rem; }
+        .product-details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .product-details-grid { grid-template-columns: 1fr 1.2fr; }
+        }
+        #product-image {
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            border: 1px solid #eee;
+        }
+        #product-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        #product-category {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 1rem;
+            background: #eee;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+        }
+        .price-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        #product-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        #original-price {
+            font-size: 1.2rem;
+            text-decoration: line-through;
+            color: #999;
+        }
+        #offer-tag {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        #stock-status {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding: 6px 12px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        #stock-status.in-stock { color: var(--success-color); background-color: #eafaf1; }
+        #stock-status.out-of-stock { color: var(--accent-color); background-color: #fdeded; }
+
+        #product-description { line-height: 1.7; color: #555; margin-bottom: 2rem; }
+        
+        #add-to-cart-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer; text-align: center;
+        }
+        #add-to-cart-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* Reviews Section */
+        .reviews-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+        .review-card {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #eee;
+        }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .review-author { font-weight: 600; }
+        .review-rating .fa-star { color: var(--warning-color); }
+        .review-text { color: #555; }
+
+        #review-form {
+            margin-top: 2rem;
+        }
+        #review-form h4 { margin-bottom: 1rem; }
+        .star-rating { margin-bottom: 1rem; }
+        .star-rating .fa-star { font-size: 1.5rem; color: #ccc; cursor: pointer; margin-right: 5px; }
+        .star-rating .fa-star.selected { color: var(--warning-color); }
+        #review-text { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; min-height: 80px; margin-bottom: 1rem; }
+        #review-form button { padding: 10px 20px; border: none; background: var(--secondary-color); color: white; border-radius: 5px; cursor: pointer; }
+
+        #toast-message {
+            position: fixed;
+            bottom: 20px; left: 50%;
+            transform: translateX(-50%);
+            background-color: #333; color: white;
+            padding: 12px 25px; border-radius: 25px;
+            font-size: 1rem; z-index: 3000;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        #toast-message.show { opacity: 1; visibility: visible; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Shop</a>
+        <div id="product-container">
+             <div class="product-details-grid">
+                <div class="product-image-container">
+                    <img src="" alt="Product Image" id="product-image">
+                </div>
+                <div class="product-info-container">
+                    <h1 id="product-title">Loading...</h1>
+                    <p id="product-category"></p>
+                    <div class="price-wrapper">
+                        <span id="product-price"></span>
+                        <del id="original-price"></del>
+                        <span id="offer-tag"></span>
+                    </div>
+                    <p id="stock-status"></p>
+                    <p id="product-description"></p>
+                    <button id="add-to-cart-btn" disabled>Add to Cart</button>
+                </div>
+            </div>
+        </div>
+       
+        <div class="reviews-section">
+            <h3>Customer Reviews</h3>
+            <div id="reviews-container">
+                <p>No reviews yet.</p>
+            </div>
+
+            <form id="review-form" style="display: none;">
+                <h4>Write a Review</h4>
+                <div class="star-rating" data-rating="0">
+                    <i class="fas fa-star" data-value="1"></i>
+                    <i class="fas fa-star" data-value="2"></i>
+                    <i class="fas fa-star" data-value="3"></i>
+                    <i class="fas fa-star" data-value="4"></i>
+                    <i class="fas fa-star" data-value="5"></i>
+                </div>
+                <textarea id="review-text" placeholder="Share your thoughts..." required></textarea>
+                <button type="submit">Submit Review</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="toast-message"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getDatabase, ref, get, set, push, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyC6jJ_XC61d9UnjOyV8BMmqjwjBlNaxCG4",
+          authDomain: "rupkotha-bd-838fd.firebaseapp.com",
+          databaseURL: "https://rupkotha-bd-838fd-default-rtdb.firebaseio.com",
+          projectId: "rupkotha-bd-838fd",
+          storageBucket: "rupkotha-bd-838fd.appspot.com",
+          messagingSenderId: "482400392594",
+          appId: "1:482400392594:web:316f9dadf822fef9a31d4b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+
+        // Wrap all logic in onAuthStateChanged to ensure user state is known
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            // Show review form only if user is logged in
+            if(currentUser) {
+                document.getElementById('review-form').style.display = 'block';
+            }
+            // Load product details after we know the user's login status
+            loadProductDetails();
+        });
+
+        async function loadProductDetails() {
+            if (!productId) {
+                document.getElementById('product-container').innerHTML = '<h2>Product not found!</h2><a href="index.html">Go back to shop</a>';
+                return;
+            }
+
+            const productRef = ref(db, `products/${productId}`);
+            const snapshot = await get(productRef);
+
+            if (snapshot.exists()) {
+                const product = snapshot.val();
+                
+                // Populate HTML
+                document.getElementById('product-image').src = product.imageUrl;
+                document.getElementById('product-title').textContent = product.name;
+                document.getElementById('product-category').textContent = product.category;
+                document.getElementById('product-description').textContent = product.description;
+
+                // Handle Price and Offer
+                const priceEl = document.getElementById('product-price');
+                const originalPriceEl = document.getElementById('original-price');
+                const offerTagEl = document.getElementById('offer-tag');
+                
+                if (product.offerPrice && product.offerPrice > 0 && product.offerPrice < product.price) {
+                    priceEl.textContent = `৳${product.offerPrice}`;
+                    originalPriceEl.textContent = `৳${product.price}`;
+                    const discount = Math.round(((product.price - product.offerPrice) / product.price) * 100);
+                    offerTagEl.textContent = `${discount}% OFF`;
+                    offerTagEl.style.display = 'inline-block';
+                } else {
+                    priceEl.textContent = `৳${product.price}`;
+                    originalPriceEl.style.display = 'none';
+                    offerTagEl.style.display = 'none';
+                }
+
+                // Handle Stock Status
+                const stockEl = document.getElementById('stock-status');
+                const addToCartBtn = document.getElementById('add-to-cart-btn');
+                if (product.stock > 0) {
+                    stockEl.textContent = `In Stock (${product.stock} available)`;
+                    stockEl.className = 'in-stock';
+                    addToCartBtn.disabled = false;
+                } else {
+                    stockEl.textContent = 'Out of Stock';
+                    stockEl.className = 'out-of-stock';
+                    addToCartBtn.disabled = true;
+                }
+                
+                // Load reviews for this product
+                loadReviews();
+
+            } else {
+                document.getElementById('product-container').innerHTML = '<h2>Product not found!</h2>';
+            }
+        }
+
+        // Add to Cart Logic
+        document.getElementById('add-to-cart-btn').addEventListener('click', async () => {
+            if (!currentUser) {
+                alert("Please log in to add items to your cart.");
+                window.location.href = 'index.html#home'; // Redirect to login
+                return;
+            }
+            const cartItemRef = ref(db, `users/${currentUser.uid}/cart/${productId}`);
+            const snapshot = await get(cartItemRef);
+            const currentQuantity = snapshot.exists() ? snapshot.val().quantity : 0;
+            
+            await set(ref(db, `users/${currentUser.uid}/cart/${productId}`), {
+                quantity: currentQuantity + 1
+            });
+            showToast("Product added to cart!");
+        });
+
+        // Review Logic
+        const stars = document.querySelectorAll('.star-rating .fa-star');
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = star.dataset.value;
+                document.querySelector('.star-rating').dataset.rating = rating;
+                stars.forEach(s => {
+                    s.classList.toggle('selected', s.dataset.value <= rating);
+                });
+            });
+        });
+
+        document.getElementById('review-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rating = document.querySelector('.star-rating').dataset.rating;
+            const text = document.getElementById('review-text').value;
+
+            if (rating === '0') {
+                alert("Please select a star rating.");
+                return;
+            }
+            
+            const reviewData = {
+                userId: currentUser.uid,
+                userName: currentUser.email.split('@')[0], // Using email prefix as name
+                rating: parseInt(rating),
+                text: text,
+                timestamp: Date.now()
+            };
+
+            await set(push(ref(db, `reviews/${productId}`)), reviewData);
+            showToast("Thank you for your review!");
+            document.getElementById('review-form').reset();
+            document.querySelector('.star-rating').dataset.rating = 0;
+            stars.forEach(s => s.classList.remove('selected'));
+        });
+
+        function loadReviews() {
+            const reviewsRef = ref(db, `reviews/${productId}`);
+            onValue(reviewsRef, (snapshot) => {
+                const container = document.getElementById('reviews-container');
+                if (!snapshot.exists()) {
+                    container.innerHTML = '<p>No reviews yet. Be the first to write one!</p>';
+                    return;
+                }
+                container.innerHTML = '';
+                snapshot.forEach(child => {
+                    const review = child.val();
+                    const reviewCard = document.createElement('div');
+                    reviewCard.className = 'review-card';
+                    
+                    let starHTML = '';
+                    for (let i = 1; i <= 5; i++) {
+                        starHTML += `<i class="fas fa-star ${i <= review.rating ? 'selected' : ''}"></i>`;
+                    }
+
+                    reviewCard.innerHTML = `
+                        <div class="review-header">
+                            <span class="review-author">${review.userName}</span>
+                            <span class="review-rating">${starHTML}</span>
+                        </div>
+                        <p class="review-text">${review.text}</p>
+                    `;
+                    container.appendChild(reviewCard);
+                });
+            });
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast-message');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+    </script>
+</body>
+</html>

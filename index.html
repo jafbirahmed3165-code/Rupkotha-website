@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RUPKOTHA.COM - Your Online Store</title>
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --background-color: #f4f4f9;
+            --text-color: #333;
+            --header-bg: #ffffff;
+            --footer-bg: #ffffff;
+            --card-bg: #ffffff;
+            --accent-color: #ff4757;
+            --success-color: #2ed573;
+            --font-family: 'Poppins', sans-serif;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 10px;
+        }
+        /* General Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: var(--font-family); background-color: var(--background-color); color: var(--text-color); padding-top: 60px; padding-bottom: 60px; }
+        
+        /* Header & Nav */
+        .header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background-color: var(--header-bg); display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 1000; }
+        .header .logo { font-size: 1.5rem; font-weight: 700; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-icons { display: flex; align-items: center; gap: 1rem; }
+        .header-icons i { font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+        #login-status-indicator { width: 10px; height: 10px; background-color: var(--success-color); border-radius: 50%; display: none; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background-color: var(--footer-bg); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 8px rgba(0,0,0,0.1); z-index: 1000; }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; color: #999; text-decoration: none; position: relative; padding: 5px 0; }
+        .bottom-nav-item i { font-size: 1.5rem; }
+        .bottom-nav-item span { font-size: 0.75rem; }
+        .bottom-nav-item.active { color: var(--primary-color); font-weight: 600; }
+        .badge { position: absolute; top: -2px; right: -8px; background-color: var(--accent-color); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: 700; display: none; }
+        
+        /* Pages & Content */
+        .page { display: none; padding: 1rem; min-height: calc(100vh - 120px); }
+        .page.active { display: block; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .product-card { background-color: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow); overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
+        .product-card-image { width: 100%; height: 150px; object-fit: cover; }
+        .product-card-info { padding: 0.75rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-color); }
+        .product-card-price { font-size: 1rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .add-to-cart-btn { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); color: white; border: none; padding: 6px 12px; font-size: 0.8rem; border-radius: 5px; cursor: pointer; font-weight: 500; }
+        .add-to-wishlist-btn { background: none; border: none; font-size: 1.25rem; color: #ccc; cursor: pointer; }
+        .add-to-wishlist-btn.active { color: var(--accent-color); }
+        .list-item { display: flex; background: var(--card-bg); padding: 1rem; border-radius: var(--border-radius); margin-bottom: 1rem; box-shadow: var(--shadow); align-items: center; }
+        .list-item-img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; margin-right: 1rem; }
+        .list-item-info { flex-grow: 1; }
+        
+        /* Shipping Modal Enhancements */
+        .coupon-section { display: flex; gap: 10px; margin-bottom: 1rem; }
+        #coupon-code-input { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        #apply-coupon-btn { padding: 10px 15px; border: none; background-color: var(--secondary-color); color: white; border-radius: 5px; cursor: pointer; }
+        #apply-coupon-btn:disabled { background-color: #ccc; }
+        #coupon-status { min-height: 20px; margin-bottom: 1rem; font-weight: 600; text-align: center; }
+        #coupon-status.success { color: var(--success-color); }
+        #coupon-status.error { color: var(--accent-color); }
+
+        .order-summary-details { font-size: 1rem; margin-bottom: 1.5rem; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        #summary-total { font-size: 1.2rem; font-weight: 700; border-top: 1px solid #eee; padding-top: 8px; }
+        
+        /* Other styles remain the same */
+        #home-slider-container { width: 100%; height: 200px; position: relative; overflow: hidden; border-radius: var(--border-radius); margin-bottom: 1.5rem; }
+        .slider-wrapper { display: flex; height: 100%; transition: transform 0.5s ease-in-out; }
+        .slide { min-width: 100%; height: 100%; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .fallback-slide { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); color: white; font-size: 2rem; font-weight: bold; }
+        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; display: flex; justify-content: space-between; padding: 0 10px; }
+        .slider-nav button { background-color: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 1rem; }
+        .category-bubbles { display: flex; overflow-x: auto; padding-bottom: 1rem; margin-bottom: 1rem; scrollbar-width: none; }
+        .category-bubbles::-webkit-scrollbar { display: none; }
+        .category-bubble { flex-shrink: 0; padding: 8px 16px; margin-right: 10px; border-radius: 20px; background-color: #e0e0e0; color: var(--text-color); cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .category-bubble:nth-child(5n+1){background-color:#f9d5e5}.category-bubble:nth-child(5n+2){background-color:#e8f0c2}.category-bubble:nth-child(5n+3){background-color:#c7d5ed}.category-bubble:nth-child(5n+4){background-color:#f7d6bf}.category-bubble:nth-child(5n){background-color:#d4e7e9}
+        .category-bubble.active { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        #search-input { width: 100%; padding: 12px 15px; font-size: 1rem; border-radius: var(--border-radius); border: 1px solid #ddd; margin-bottom: 1rem; }
+        .list-item-title { font-weight: 600; margin-bottom: 5px; }
+        .list-item-price { color: var(--primary-color); font-weight: 700; }
+        .quantity-controls { display: flex; align-items: center; margin-top: 10px; }
+        .quantity-controls button { width: 30px; height: 30px; border: 1px solid #ddd; background: #f9f9f9; cursor: pointer; font-size: 1.2rem; }
+        .quantity-controls span { padding: 0 15px; font-weight: 600; }
+        .list-item-actions { display: flex; flex-direction: column; gap: 10px; }
+        .list-item-actions button { padding: 5px 10px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.8rem; }
+        .remove-btn { background-color: var(--accent-color); }
+        .move-to-cart-btn { background-color: var(--secondary-color); }
+        .cart-total { margin-top: 2rem; text-align: right; font-size: 1.2rem; font-weight: bold; }
+        .checkout-btn { display: block; width: 100%; padding: 15px; margin-top: 1rem; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: var(--border-radius); font-size: 1.1rem; font-weight: 600; cursor: pointer; }
+        .empty-list-message { text-align: center; padding: 2rem; font-size: 1.1rem; color: #777; }
+        .order-card { background: var(--card-bg); padding: 1rem; margin-bottom: 1rem; border-radius: var(--border-radius); box-shadow: var(--shadow); }
+        .order-header { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.5rem; }
+        .order-id { font-size: 0.9rem; color: #555; }
+        .order-date { font-size: 0.9rem; color: #777; }
+        .order-body { display: flex; justify-content: space-between; align-items: center; }
+        .order-total { font-size: 1.2rem; font-weight: 700; color: var(--primary-color); }
+        .order-status { padding: 5px 10px; border-radius: 15px; color: white; font-size: 0.8rem; font-weight: 500; }
+        .order-status.Pending { background-color: #f39c12; }
+        .order-status.Shipped { background-color: #3498db; }
+        .order-status.Delivered { background-color: var(--success-color); }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 1rem; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 1.5rem; border-radius: var(--border-radius); width: 100%; max-width: 400px; position: relative; overflow-y: auto; max-height: 90vh; }
+        .close-modal-btn { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; color: #888; cursor: pointer; }
+        #auth-modal .modal-content { max-height: initial; }
+        #auth-modal h2 { text-align: center; margin-bottom: 1.5rem; }
+        .auth-form { display: flex; flex-direction: column; }
+        .auth-form input { padding: 12px; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; }
+        .auth-form button { padding: 12px; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 5px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .toggle-auth-form { text-align: center; margin-top: 1rem; font-size: 0.9rem; }
+        .toggle-auth-form span { color: var(--secondary-color); cursor: pointer; font-weight: 600; }
+        #auth-error, #auth-error-register { color: var(--accent-color); text-align: center; margin-bottom: 1rem; font-size: 0.9rem; min-height: 1.2em; }
+        #product-detail-modal .modal-content { max-width: 500px; }
+        #product-detail-image { width: 100%; height: 250px; object-fit: cover; border-radius: var(--border-radius); margin-bottom: 1rem; }
+        #product-detail-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        #product-detail-price { font-size: 1.3rem; font-weight: 600; color: var(--primary-color); margin-bottom: 1rem; }
+        #product-detail-description { font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; color: #555; }
+        #product-detail-actions { display: flex; gap: 1rem; }
+        #product-detail-actions button { flex-grow: 1; padding: 12px; border-radius: 5px; border: none; font-size: 1rem; cursor: pointer; font-weight: 600; }
+        #pd-add-to-cart { background: var(--secondary-color); color: white; }
+        #pd-add-to-wishlist { background: #eee; color: var(--text-color); }
+        #menu-modal { justify-content: flex-end; background: rgba(0, 0, 0, 0.4); }
+        #menu-modal .modal-content { width: 280px; max-width: 80%; height: 100%; border-radius: 0; background: var(--card-bg); padding: 0; position: fixed; top: 0; right: 0; transform: translateX(100%); transition: transform 0.3s ease-in-out; box-shadow: -4px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; }
+        #menu-modal.active .modal-content { transform: translateX(0); }
+        .menu-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #eee; }
+        .menu-title { font-size: 1.2rem; font-weight: 600; color: var(--text-color); }
+        #menu-modal .close-modal-btn { position: static; color: var(--text-color); font-size: 1.8rem; }
+        .menu-links { list-style: none; padding: 1rem 0; text-align: left; }
+        .menu-links li { margin-bottom: 0; }
+        .menu-links li a, .menu-links li button { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; text-decoration: none; color: var(--text-color); font-size: 1rem; font-weight: 500; background: none; border: none; width: 100%; text-align: left; cursor: pointer; }
+        .menu-links li a:hover, .menu-links li button:hover { background-color: #f4f4f4; }
+        .menu-links li a i, .menu-links li button i { font-size: 1.1rem; width: 20px; text-align: center; color: #555; }
+        #logout-btn { margin: 0; padding: 1rem 1.5rem; font-size: 1rem; border-radius: 0; color: var(--text-color); background: transparent; }
+        .static-page { max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: var(--border-radius); }
+        .static-page h2 { margin-bottom: 1.5rem; color: var(--primary-color); }
+        .static-page p { line-height: 1.7; margin-bottom: 1rem; }
+        #contact-form { display: flex; flex-direction: column; }
+        #contact-form input, #contact-form textarea { padding: 10px; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 5px; }
+        #contact-form button { padding: 12px; background: var(--secondary-color); color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #shipping-form input, #shipping-form textarea { padding: 10px; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 5px; width: 100%; font-size: 1rem; }
+        @media (min-width: 768px) {
+            body { padding-top: 70px; padding-bottom: 0; }
+            .header { height: 70px; padding: 0 2rem; }
+            .bottom-nav { display: none; }
+            .page { padding: 2rem; }
+            .product-grid { grid-template-columns: repeat(4, 1fr); }
+            #home-slider-container { height: 400px; }
+            .desktop-nav { display: flex; gap: 1.5rem; }
+            .desktop-nav a { text-decoration: none; color: var(--text-color); font-weight: 500; position: relative; }
+            .desktop-nav a .badge { top: -8px; right: -12px; }
+            .header-icons { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main HTML structure remains the same -->
+    <header class="header"> <div class="logo">RuPkOtHa.CoM</div> <div class="header-icons"> <div id="login-status-indicator"></div> <a href="#search"><i class="fas fa-search"></i></a> </div> </header>
+    <main> <section id="home" class="page"> <div id="home-slider-container"> <div class="slider-wrapper"></div> <div class="slider-nav"> <button id="prev-slide">&lt;</button> <button id="next-slide">&gt;</button> </div> </div> <div class="category-bubbles" id="category-bubbles-container"></div> <div class="product-grid" id="product-grid-home"></div> </section> <section id="search" class="page"> <input type="text" id="search-input" placeholder="Search for products..."> <div class="product-grid" id="product-grid-search"></div> </section> <section id="wishlist" class="page"> <h2>My Wishlist</h2> <div id="wishlist-items-container"></div> </section> <section id="cart" class="page"> <h2>My Cart</h2> <div id="cart-items-container"></div> <div id="cart-summary"> <div class="cart-total" id="cart-total-price"></div> <button class="checkout-btn" id="checkout-btn">Proceed to Checkout</button> </div> </section> <section id="orders" class="page"> <h2>My Orders</h2> <div id="orders-container"></div> </section> <section id="profile" class="page"> <div class="static-page"> <h2>My Profile</h2> <p><strong>Email:</strong> <span id="profile-email"></span></p> </div> </section> <section id="about" class="page"> <div class="static-page"> <h2>About Us</h2> <p>Welcome to RUPKOTHA.COM, your number one source for all things. We're dedicated to giving you the very best of products, with a focus on quality, customer service and uniqueness.</p> <p>Founded in 2025, RUPKOTHA.COM has come a long way from its beginnings. We now serve customers all over the world, and are thrilled to be a part of the fair trade wing of the industry.</p> </div> </section> <section id="contact" class="page"> <div class="static-page"> <h2>Contact Us</h2> <form id="contact-form"> <input type="text" id="contact-name" placeholder="Your Name" required> <input type="email" id="contact-email" placeholder="Your Email" required> <textarea id="contact-message" rows="5" placeholder="Your Message" required></textarea> <button type="submit">Send Message</button> </form> </div> </section> </main>
+    <nav class="bottom-nav"> <a href="#home" class="bottom-nav-item active"><i class="fas fa-home"></i><span>Home</span></a> <a href="#wishlist" class="bottom-nav-item"><i class="fas fa-heart"></i><span class="badge" id="wishlist-badge">0</span><span>Wishlist</span></a> <a href="#cart" class="bottom-nav-item"><i class="fas fa-shopping-cart"></i><span class="badge" id="cart-badge">0</span><span>Cart</span></a> <button id="menu-btn" class="bottom-nav-item" style="background:none; border:none;"><i class="fas fa-bars"></i><span>Menu</span></button> </nav>
+    
+    <!-- Modals -->
+    <div id="auth-modal" class="modal"> <div class="modal-content"> <button class="close-modal-btn">&times;</button> <div id="login-form"> <h2>Login</h2> <form class="auth-form" id="login-form-element"> <div id="auth-error"></div> <input type="email" id="login-email" placeholder="Email" required> <input type="password" id="login-password" placeholder="Password" required> <button type="submit">Login</button> </form> <p class="toggle-auth-form">Don't have an account? <span id="show-register">Register</span></p> </div> <div id="register-form" style="display: none;"> <h2>Register</h2> <form class="auth-form" id="register-form-element"> <div id="auth-error-register"></div> <input type="email" id="register-email" placeholder="Email" required> <input type="password" id="register-password" placeholder="Password" required> <button type="submit">Register</button> </form> <p class="toggle-auth-form">Already have an account? <span id="show-login">Login</span></p> </div> </div> </div>
+    <div id="product-detail-modal" class="modal"> <div class="modal-content"> <button class="close-modal-btn">&times;</button> <img src="" alt="Product Image" id="product-detail-image"> <h2 id="product-detail-title"></h2> <p id="product-detail-price"></p> <p id="product-detail-description"></p> <div id="product-detail-actions"> <button id="pd-add-to-cart">Add to Cart</button> <button id="pd-add-to-wishlist"><i class="fas fa-heart"></i> Add to Wishlist</button> </div> </div> </div>
+    <div id="menu-modal" class="modal"> <div class="modal-content"> <div class="menu-header"> <h2 class="menu-title">RUPKOTHA.COM</h2> <button class="close-modal-btn">&times;</button> </div> <ul class="menu-links" id="menu-links-container"></ul> </div> </div>
+    
+    <!-- Shipping Modal (MODIFIED) -->
+    <div id="shipping-modal" class="modal">
+        <div class="modal-content">
+             <button class="close-modal-btn">&times;</button>
+             <h2>Shipping & Checkout</h2>
+             
+             <!-- Order Summary Section -->
+             <div class="order-summary-details">
+                 <div class="summary-row">
+                     <span>Subtotal</span>
+                     <span id="summary-subtotal">৳0.00</span>
+                 </div>
+                 <div class="summary-row">
+                     <span>Discount</span>
+                     <span id="summary-discount">- ৳0.00</span>
+                 </div>
+                 <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+                 <div class="summary-row" id="summary-total">
+                     <strong>Total</strong>
+                     <strong id="summary-total-price">৳0.00</strong>
+                 </div>
+             </div>
+             
+             <!-- Coupon Section -->
+             <div class="coupon-section">
+                 <input type="text" id="coupon-code-input" placeholder="Enter Coupon Code">
+                 <button id="apply-coupon-btn">Apply</button>
+             </div>
+             <div id="coupon-status"></div>
+
+             <!-- Shipping Form -->
+             <form id="shipping-form">
+                 <input type="text" id="shipping-name" placeholder="Full Name" required>
+                 <input type="email" id="shipping-email" placeholder="Email" required readonly style="background-color: #f0f0f0;">
+                 <input type="tel" id="shipping-phone" placeholder="Phone Number" required>
+                 <textarea id="shipping-address" placeholder="Full Shipping Address" required rows="3"></textarea>
+                 
+                 <div id="payment-method-selection" style="margin-bottom: 1rem;">
+                     <h4 style="margin-bottom: 0.5rem;">Payment Method</h4>
+                     <label><input type="radio" name="paymentMethod" value="Cash on Delivery" checked required> Cash on Delivery</label>
+                 </div>
+
+                 <button type="submit" class="checkout-btn">Place Order</button>
+             </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getDatabase, ref, set, get, onValue, remove, push } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyC6jJ_XC61d9UnjOyV8BMmqjwjBlNaxCG4",
+          authDomain: "rupkotha-bd-838fd.firebaseapp.com",
+          databaseURL: "https://rupkotha-bd-838fd-default-rtdb.firebaseio.com",
+          projectId: "rupkotha-bd-838fd",
+          storageBucket: "rupkotha-bd-838fd.appspot.com",
+          messagingSenderId: "482400392594",
+          appId: "1:482400392594:web:316f9dadf822fef9a31d4b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        
+        // Global state
+        let currentUser = null;
+        let products = [];
+        let wishlist = [];
+        let cart = {};
+        let appliedCoupon = null; // To store applied coupon details
+
+        const $ = (selector) => document.querySelector(selector);
+        
+        // --- MODAL HELPER FUNCTIONS (UNCHANGED) ---
+        function showModal(modalSelector) {
+            const modal = $(modalSelector);
+            if (modal) modal.classList.add('active');
+        }
+
+        function hideModal(modalSelector) {
+            const modal = $(modalSelector);
+            if (modal) modal.classList.remove('active');
+        }
+
+        // --- CHECKOUT LOGIC (UNCHANGED) ---
+
+        $('#checkout-btn').addEventListener('click', () => {
+            if (!currentUser) return showModal('#auth-modal');
+            const cartProductIds = Object.keys(cart);
+            if (cartProductIds.length === 0) return alert("Your cart is empty.");
+
+            appliedCoupon = null;
+            $('#coupon-code-input').value = '';
+            $('#coupon-code-input').disabled = false;
+            $('#apply-coupon-btn').disabled = false;
+            $('#coupon-status').textContent = '';
+            
+            updateOrderSummary();
+            
+            $('#shipping-email').value = currentUser.email;
+            showModal('#shipping-modal');
+        });
+
+        // --- COUPON LOGIC (REPLACED WITH A MORE ROBUST METHOD) ---
+        $('#apply-coupon-btn').addEventListener('click', async () => {
+            const codeInput = $('#coupon-code-input');
+            const code = codeInput.value.trim().toUpperCase();
+            const statusEl = $('#coupon-status');
+
+            if (!code) return;
+
+            try {
+                const couponsRef = ref(db, 'coupons');
+                const snapshot = await get(couponsRef);
+
+                if (snapshot.exists()) {
+                    const allCoupons = snapshot.val();
+                    let foundCoupon = null;
+
+                    // Loop through all coupon objects to find a match
+                    for (const key in allCoupons) {
+                        const coupon = allCoupons[key];
+                        
+                        // IMPORTANT: This checks for a property named 'code'.
+                        // It also converts both the stored code and input code to uppercase to avoid case-sensitivity issues.
+                        if (coupon && typeof coupon.code !== 'undefined' && coupon.code.toUpperCase() === code) {
+                            foundCoupon = coupon;
+                            break; // Exit loop once a match is found
+                        }
+                    }
+
+                    if (foundCoupon) {
+                        appliedCoupon = foundCoupon;
+                        
+                        statusEl.textContent = `Coupon "${code}" applied successfully!`;
+                        statusEl.className = 'success';
+                        codeInput.disabled = true;
+                        $('#apply-coupon-btn').disabled = true;
+
+                        updateOrderSummary();
+                    } else {
+                        // Looped through all coupons, but no match was found.
+                        appliedCoupon = null;
+                        statusEl.textContent = 'Invalid or expired coupon code.';
+                        statusEl.className = 'error';
+                        updateOrderSummary();
+                    }
+
+                } else {
+                    // The entire "/coupons" path is empty in your database.
+                    statusEl.textContent = 'Invalid coupon code.';
+                    statusEl.className = 'error';
+                }
+            } catch (error) {
+                console.error("An error occurred while fetching coupons:", error);
+                statusEl.textContent = 'Error checking coupon. Please try again.';
+                statusEl.className = 'error';
+            }
+        });
+
+        function updateOrderSummary() {
+            const cartProductIds = Object.keys(cart);
+            const items = products
+                .filter(p => cartProductIds.includes(p.id))
+                .map(p => ({
+                    price: p.offerPrice > 0 ? p.offerPrice : p.price,
+                    quantity: cart[p.id].quantity
+                }));
+            
+            const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let discount = 0;
+
+            if (appliedCoupon) {
+                // Ensure discountValue is a number before calculation
+                const discountValue = parseFloat(appliedCoupon.discountValue) || 0;
+                if (appliedCoupon.discountType === 'percentage') {
+                    discount = subtotal * (discountValue / 100);
+                } else { // fixed
+                    discount = discountValue;
+                }
+            }
+            
+            const total = Math.max(0, subtotal - discount);
+
+            $('#summary-subtotal').textContent = `৳${subtotal.toFixed(2)}`;
+            $('#summary-discount').textContent = `- ৳${discount.toFixed(2)}`;
+            $('#summary-total-price').textContent = `৳${total.toFixed(2)}`;
+        }
+        
+        $('#shipping-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const cartProductIds = Object.keys(cart);
+            const items = products.filter(p => cartProductIds.includes(p.id)).map(p => ({
+                id: p.id,
+                name: p.name,
+                price: p.offerPrice > 0 ? p.offerPrice : p.price,
+                quantity: cart[p.id].quantity
+            }));
+            const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let discount = 0;
+            if (appliedCoupon) {
+                const discountValue = parseFloat(appliedCoupon.discountValue) || 0;
+                discount = appliedCoupon.discountType === 'percentage' ? subtotal * (discountValue / 100) : discountValue;
+            }
+            const totalAmount = Math.max(0, subtotal - discount);
+            
+            const newOrderRef = push(ref(db, 'orders'));
+            const orderData = {
+                orderId: newOrderRef.key,
+                userId: currentUser.uid,
+                date: Date.now(),
+                userEmail: currentUser.email,
+                items,
+                totalAmount,
+                status: 'Pending',
+                shippingName: $('#shipping-name').value,
+                shippingPhone: $('#shipping-phone').value,
+                shippingAddress: $('#shipping-address').value,
+                paymentMethod: $('input[name="paymentMethod"]:checked').value,
+                couponUsed: appliedCoupon ? { code: appliedCoupon.code, discountAmount: discount } : null
+            };
+            
+            await set(newOrderRef, orderData);
+            await remove(ref(db, `users/${currentUser.uid}/cart`));
+            
+            hideModal('#shipping-modal');
+            $('#shipping-form').reset();
+            alert('Order placed successfully!');
+            window.location.hash = '#orders';
+        });
+
+        // --- ALL OTHER JS FUNCTIONS (UNCHANGED) ---
+        const $$=(e)=>document.querySelectorAll(e);function handleRouteChange(){const e=window.location.hash||"#home";$$(".page").forEach(t=>t.classList.toggle("active",t.id===e.substring(1))),$$(".bottom-nav-item").forEach(t=>{"A"===t.tagName&&t.classList.toggle("active",t.getAttribute("href")===e)}),hideModal("#menu-modal")}onAuthStateChanged(auth,e=>{currentUser=e,updateUIForAuthState(),e?(loadWishlist(),loadCart(),loadOrders(),$("#profile-email").textContent=e.email):(wishlist=[],cart={},renderCart(),renderWishlist(),updateBadges())});function loadProducts(){const e=ref(db,"products");onValue(e,e=>{e.exists()?(products=Object.entries(e.val()).map(([e,t])=>({id:e,...t})),renderCategories(),rerenderAllProductGrids(),renderCart(),renderWishlist()):products=[]},e=>{console.error("Error loading products:",e)})}function renderProducts(e,t){const o=$(t);if(o){if(!e||!e.length)return void(o.innerHTML="<p>No products found.</p>");o.innerHTML=e.map(e=>{const t=wishlist.includes(e.id);return`
+                <div class="product-card" data-id="${e.id}">
+                    <img src="${e.imageUrl}" alt="${e.name}" class="product-card-image">
+                    <div class="product-card-info">
+                        <div>
+                           <h3 class="product-card-title">${e.name}</h3>
+                           <p class="product-card-price">৳${e.offerPrice>0?e.offerPrice:e.price}</p>
+                        </div>
+                        <div class="product-card-actions">
+                            <button class="add-to-cart-btn" data-id="${e.id}">Add to Cart</button>
+                            <button class="add-to-wishlist-btn ${t?"active":""}" data-id="${e.id}"><i class="fas fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `}).join("")}}function loadCart(){if(!currentUser)return;const e=ref(db,`users/${currentUser.uid}/cart`);onValue(e,e=>{cart=e.exists()?e.val():{},renderCart(),updateBadges()})}function renderCart(){const e=$("#cart-items-container"),t=Object.keys(cart);if(!t.length)return e.innerHTML='<p class="empty-list-message">Your cart is empty.</p>',$("#cart-summary").style.display="none",void 0;const o=products.filter(e=>t.includes(e.id));if(0===o.length&&t.length>0)return e.innerHTML="<p>Loading cart details...</p>",void 0;$("#cart-summary").style.display="block";let n=0;e.innerHTML=o.map(e=>{const t=cart[e.id]?.quantity||0;if(0===t)return"";const o=e.offerPrice>0?e.offerPrice:e.price,r=o*t;return n+=r,`
+                    <div class="list-item">
+                        <img src="${e.imageUrl}" alt="${e.name}" class="list-item-img">
+                        <div class="list-item-info">
+                            <div class="list-item-title">${e.name}</div>
+                            <div class="list-item-price">৳${r.toFixed(2)}</div>
+                            <div class="quantity-controls">
+                                <button class="quantity-decrease" data-id="${e.id}">-</button>
+                                <span>${t}</span>
+                                <button class="quantity-increase" data-id="${e.id}">+</button>
+                            </div>
+                        </div>
+                        <div class="list-item-actions">
+                           <button class="remove-btn" data-id="${e.id}" data-cart="true" title="Remove from cart">Remove</button>
+                        </div>
+                    </div>
+                `}).join(""),$("#cart-total-price").textContent=`Total: ৳${n.toFixed(2)}`}window.addEventListener("load",()=>{loadProducts(),loadSlider(),handleRouteChange()});function updateUIForAuthState(){const e=$("#login-status-indicator"),t=$("#menu-links-container");currentUser?(e.style.display="block",t.innerHTML=`
+                    <li><a href="#profile"><i class="fas fa-user-circle"></i> Profile</a></li>
+                    <li><a href="#orders"><i class="fas fa-box-open"></i> My Orders</a></li>
+                    <li><a href="#about"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="#contact"><i class="fas fa-envelope"></i> Contact Us</a></li>
+                    <li><button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button></li>
+                `,$("#logout-btn").addEventListener("click",()=>{signOut(auth),window.location.hash="#home",hideModal("#menu-modal")})):(e.style.display="none",t.innerHTML=`
+                    <li><a href="#" id="login-menu-link"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                    <li><a href="#about"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="#contact"><i class="fas fa-envelope"></i> Contact Us</a></li>
+                `,$("#login-menu-link").addEventListener("click",e=>{e.preventDefault(),hideModal("#menu-modal"),showModal("#auth-modal")})),t.querySelectorAll("a").forEach(e=>{e.addEventListener("click",()=>{"login-menu-link"!==e.id&&hideModal("#menu-modal")})})}
+$("#login-form-element").addEventListener("submit",async e=>{e.preventDefault();const t=$("#login-email").value,o=$("#login-password").value;try{await signInWithEmailAndPassword(auth,t,o),hideModal("#auth-modal"),$("#auth-error").textContent="",e.target.reset()}catch(n){$("#auth-error").textContent=n.message}});
+$("#register-form-element").addEventListener("submit",async e=>{e.preventDefault();const t=$("#register-email").value,o=$("#register-password").value;try{await createUserWithEmailAndPassword(auth,t,o),hideModal("#auth-modal"),$("#auth-error-register").textContent="",e.target.reset()}catch(n){$("#auth-error-register").textContent=n.message}});async function loadSlider(){const e=$(".slider-wrapper");try{const t=await get(ref(db,"sliderImages"));t.exists()?(e.innerHTML=Object.values(t.val()).map(e=>`
+                        <div class="slide"><img src="${e.imageUrl}" alt="Sale Banner"></div>
+                    `).join(""),initSlider()):e.innerHTML='<div class="fallback-slide">RUPKOTHA.COM</div>'}catch(t){console.error("Error loading slider:",t),e.innerHTML='<div class="fallback-slide">RUPKOTHA.COM</div>'}}
+function initSlider(){const e=$(".slider-wrapper"),t=$$(".slide");if(t.length<=1)return void($(".slider-nav")&&(document.querySelector(".slider-nav").style.display="none"));let o=0;function n(n){n<0&&(n=t.length-1),n>=t.length&&(n=0),e.style.transform=`translateX(-${100*n}%)`,o=n}$("#next-slide").addEventListener("click",()=>n(o+1)),$("#prev-slide").addEventListener("click",()=>n(o-1)),setInterval(()=>n(o+1),5e3)}function renderCategories(){const e=["All",...new Set(products.map(e=>e.category))],t=$("#category-bubbles-container");t.innerHTML=e.map(e=>`
+                <span class="category-bubble ${"All"===e?"active":""}" data-category="${e}">${e}</span>
+            `).join("")}function loadWishlist(){currentUser&&onValue(ref(db,`users/${currentUser.uid}/wishlist`),e=>{wishlist=e.exists()?Object.keys(e.val()):[],renderWishlist(),updateBadges(),rerenderAllProductGrids()})}
+function renderWishlist(){const e=$("#wishlist-items-container");if(e){const t=products.filter(e=>wishlist.includes(e.id));e.innerHTML=t.length?t.map(e=>`
+                <div class="list-item">
+                    <img src="${e.imageUrl}" alt="${e.name}" class="list-item-img">
+                    <div class="list-item-info">
+                        <div class="list-item-title">${e.name}</div>
+                        <div class="list-item-price">৳${e.offerPrice>0?e.offerPrice:e.price}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="remove-btn" data-id="${e.id}" title="Remove from wishlist">Remove</button>
+                        <button class="move-to-cart-btn" data-id="${e.id}" title="Move to Cart">Move to Cart</button>
+                    </div>
+                </div>
+            `).join(""):`<p class="empty-list-message">Your wishlist is empty.</p>`}}function loadOrders(){if(!currentUser)return;const e=ref(db,"orders");onValue(e,e=>{const t=$("#orders-container");if(!e.exists())return void(t.innerHTML='<p class="empty-list-message">You have no past orders.</p>');const o=e.val();let n=[];for(const r in o){const i=o[r];i.userId===currentUser.uid&&n.push({id:r,...i})}n.length?(n.sort((e,t)=>t.date-e.date),t.innerHTML=n.map(e=>`
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">Order ID: ${e.orderId.slice(-8)}</span>
+                            <span class="order-date">${new Date(e.date).toLocaleDateString()}</span>
+                        </div>
+                        <div class="order-body">
+                            <span class="order-total">৳${e.totalAmount.toFixed(2)}</span>
+                            <span class="order-status ${e.status}">${e.status}</span>
+                        </div>
+                    </div>
+                `).join("")):t.innerHTML='<p class="empty-list-message">You have no past orders.</p>'})}document.addEventListener("click",async e=>{if(e.target.matches(".category-bubble"))$$(".category-bubble").forEach(e=>e.classList.remove("active")),e.target.classList.add("active"),handleCategoryFilter();const t=e.target.closest(".product-card");if(t){const o=t.dataset.id;if(e.target.matches(".product-card-image"))window.location.href=`productdetails.html?id=${o}`;else if(!e.target.closest("button")){const n=products.find(e=>e.id===o);n&&($("#product-detail-image").src=n.imageUrl,$("#product-detail-title").textContent=n.name,$("#product-detail-price").textContent=`৳${n.offerPrice>0?n.offerPrice:n.price}`,$("#product-detail-description").textContent=n.description,$("#pd-add-to-cart").dataset.id=o,$("#pd-add-to-wishlist").dataset.id=o,showModal("#product-detail-modal"))}}if(e.target.closest(".add-to-wishlist-btn")||e.target.closest("#pd-add-to-wishlist")){const t=e.target.closest("button"),o=t.dataset.id;await toggleWishlist(o)}if(e.target.closest(".add-to-cart-btn")||e.target.closest("#pd-add-to-cart")){const t=e.target.closest("button"),o=t.dataset.id;await addToCart(o),e.target.closest("#pd-add-to-cart")&&hideModal("#product-detail-modal")}if(e.target.matches(".remove-btn")){const t=e.target.dataset.id;e.target.dataset.cart?await remove(ref(db,`users/${currentUser.uid}/cart/${t}`)):await toggleWishlist(t)}e.target.matches(".move-to-cart-btn")&&(await addToCart(e.target.dataset.id),await toggleWishlist(e.target.dataset.id)),e.target.matches(".quantity-increase")&&await updateCartQuantity(e.target.dataset.id,1),e.target.matches(".quantity-decrease")&&await updateCartQuantity(e.target.dataset.id,-1),(e.target.matches(".modal")||e.target.matches(".close-modal-btn"))&&$$(".modal").forEach(e=>e.classList.remove("active"))});
+$("#search-input").addEventListener("input",handleSearch);function handleSearch(){const e=$("#search-input").value.toLowerCase(),t=products.filter(t=>t.name.toLowerCase().includes(e)||t.category.toLowerCase().includes(e));renderProducts(t,"#product-grid-search")}
+function handleCategoryFilter(){const e=$(".category-bubble.active");if(!e)return;const t=e.dataset.category,o="All"===t?products:products.filter(e=>e.category===t);renderProducts(o,"#product-grid-home")}
+function rerenderAllProductGrids(){handleCategoryFilter(),handleSearch()}
+$("#show-register").addEventListener("click",()=>{$("#login-form").style.display="none",$("#register-form").style.display="block"}),$("#show-login").addEventListener("click",()=>{$("#register-form").style.display="none",$("#login-form").style.display="block"}),$("#menu-btn").addEventListener("click",()=>showModal("#menu-modal"));
+$("#contact-form").addEventListener("submit",async e=>{e.preventDefault();const t=$("#contact-name").value,o=$("#contact-email").value,n=$("#contact-message").value;try{await set(push(ref(db,"messages")),{name:t,email:o,message:n,date:Date.now()}),alert("Your message has been sent!"),$("#contact-form").reset()}catch(r){console.error("Error sending message:",r),alert("Failed to send message.")}});async function toggleWishlist(e){if(!currentUser)return void showModal("#auth-modal");const t=ref(db,`users/${currentUser.uid}/wishlist/${e}`);wishlist.includes(e)?await remove(t):await set(t,!0)}
+async function addToCart(e){currentUser?await updateCartQuantity(e,1):showModal("#auth-modal")}
+async function updateCartQuantity(e,t){if(!currentUser)return;const o=ref(db,`users/${currentUser.uid}/cart/${e}/quantity`),n=cart[e]?.quantity||0,r=n+t;r>0?await set(o,r):await remove(ref(db,`users/${currentUser.uid}/cart/${e}`))}
+function updateBadges(){const e=wishlist.length,t=Object.values(cart).reduce((e,t)=>e+(t.quantity||0),0);$("#wishlist-badge").textContent=e,$("#cart-badge").textContent=t,$("#wishlist-badge").style.display=e>0?"block":"none",$("#cart-badge").style.display=t>0?"block":"none"}
+window.addEventListener("hashchange",handleRouteChange);
+
+    </script>
+</body>
+</html>
